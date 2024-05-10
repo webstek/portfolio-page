@@ -1,7 +1,18 @@
 body {
-	background-color:lightgray;
-	color:rgb(0, 0, 51);
-
+	color: lightgrey;
+	background-color: black;
 	margin: 0;
 	text-align: center;
+}
+
+#navigation {
+	background-color: #005;
+	padding-top: 12px;
+	padding-bottom: 12px;
+	position: absolute;
+	top: 10px;
+	width: 100%;
+	text-align: center;
+	z-index: 100;
+	display:block;
 }
