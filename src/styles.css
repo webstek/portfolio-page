@@ -1,18 +1,88 @@
-body {
-	color: lightgrey;
-	background-color: black;
-	margin: 0;
-	text-align: center;
+/* CSS color variables */
+:root {
+	--color: rgba(5, 19, 54, 255);
+	--highlight: rgba(23, 88, 207, 255);
+	--bg-color: rgba(201, 187, 172, 255);
+	--bg-dark: color(from var(--bg-color) srgb
+		calc(r * 0.8)
+		calc(g * 0.8)
+		calc(b * 0.8) / alpha);
 }
 
-#navigation {
-	background-color: #005;
-	padding-top: 12px;
-	padding-bottom: 12px;
-	position: absolute;
-	top: 10px;
-	width: 100%;
+/* Default styling for the body html */
+body {
+	color: var(--color);
+	background-color: var(--bg-color);
+	
 	text-align: center;
-	z-index: 100;
-	display:block;
+	font-family: monospace;
+	font-weight: bold;
+	font-size: 140%;
+}
+
+/* Top nav bar styling */
+.navigation {
+	color: var(--highlight);
+
+	display: flex;
+	flex-flow: row;
+	justify-content: right;
+	
+	height: 5vh;
+}
+.navigation li {
+	list-style: none;
+	
+	padding: 10px;
+	font-size: larger;
+
+	text-decoration: underline 0.1em rgba(0, 0, 0, 0);
+	text-underline-offset: 0.2em;
+	transition: text-decoration-color 0.4s, text-underline-offset 0.4s;
+}
+.navigation li:hover {
+	text-decoration-color: rgba(0,0,3,1);
+	text-underline-offset: 0.4em;
+}
+
+/* Styling for landing page content */
+.center-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 90vh;
+
+	text-align: center;
+}
+.center-container h1 {
+	font-family: math, Times, serif;
+	text-align: left;
+	font-size: 400%;
+	margin: 0;
+}
+.center-container h3 {
+	font-weight: normal;
+	color: var(--highlight);
+}
+
+/* button layout style */
+.button-layout {
+	margin: 50px;
+}
+
+/* anchor styling */
+a {
+	color: var(--color);
+	text-decoration: none;
+
+	padding: 2mm;
+	margin: 10px;
+	outline: solid var(--color) 1px;
+
+	transition: all 0.4s ease;
+}
+a:hover {
+	outline-color: var(--highlight);
+	background-color: var(--bg-dark);
 }

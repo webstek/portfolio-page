@@ -8,7 +8,7 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry';
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+// document.body.appendChild( renderer.domElement );
 
 const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 1000 );
 const controls = new OrbitControls( camera, renderer.domElement );
