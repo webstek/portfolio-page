@@ -1,3 +1,9 @@
+/* Apply smooth scrolling to everything bc I can't figure out which one it should be */
+* {
+	scroll-behavior: smooth !important;
+}
+
+
 /* CSS color variables */
 :root {
 	--color: rgba(5, 19, 54, 255);
@@ -7,14 +13,32 @@
 		calc(r * 0.8)
 		calc(g * 0.8)
 		calc(b * 0.8) / alpha);
+	--bg-dark-dark: color(from var(--bg-dark) srgb
+		calc(r * 0.5)
+		calc(g * 0.5)
+		calc(b * 0.5) / alpha);
 }
 
+
+/* Scrollbar appearance */
+::-webkit-scrollbar {
+	width: 12px;
+}
+::-webkit-scrollbar-track {
+	background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+	background: var(--bg-dark-dark);
+}
+
+/* Set mouse-down color for nav links and prevent from changing color once used */
 a:-webkit-any-link:active {
 	color: #050505;
 }
 a:-webkit-any-link {
 	color: var(--highlight)
 }
+
 
 /* Default styling for the body html */
 body {
@@ -26,7 +50,6 @@ body {
 	font-weight: bold;
 	font-size: 140%;
 
-	/* overflow: hidden; */
 	display: flex;
 	flex-flow: column;
 	align-items: center;
@@ -34,9 +57,10 @@ body {
 	margin: 0px;
 }
 
-#landing-renderer {
+#gallery-renderer {
 	position: relative;
 	bottom: 0;
+	transform: scale(0.98);
 	z-index: 2;
 }
 
@@ -72,24 +96,42 @@ body {
 }
 
 /* Styling for landing page content */
-.center-container {
+#center-container {
 	display: flex;
 	flex-direction: column;
 	justify-content: left;
 	text-align: left;
 }
-.center-container h1 {
+#center-container h1 {
 	font-family: math, Times, serif;
 	font-size: 400%;
 	padding: 0px 30px;
 	margin-top: 150px;
 	margin-bottom: 0px;
 }
-.center-container h3 {
+#center-container h3 {
 	font-weight: normal;
 	padding: 0px 35px;
 	margin: 0px;
 	color: var(--highlight);
+}
+
+#scroll-arrow {
+	margin-top: 100px;
+	text-align: center;
+	padding: 10px;
+}
+#scroll-arrow svg {
+	fill: var(--color);
+	transition: fill 0.4s;
+	animation: updown 1.5s linear infinite;
+}
+@keyframes updown {
+	0%, 100% { transform: translateY(10px); }
+	50% { transform: translateY(-10px); }
+}
+#scroll-arrow svg:hover {
+	fill: var(--highlight)
 }
 
 /* button layout style */
@@ -105,31 +147,33 @@ body {
 .button-layout a {
 	--side-length: clamp(50px, calc(0.2 * (100vw - 350px)), 90px);
 	fill: var(--color);
+	color: var(--color);
+	font-weight: normal;
 	text-decoration: none;
 	padding: 0px 10px;
 	vertical-align: middle;
+	text-align: center;
 
 	transition: color 0.4s, fill 0.4s;
 }
 .button-layout a:hover {
 	fill: var(--highlight);
+	color: var(--highlight);
 }
 .button-layout a svg {
-	padding-top: 5px;
+	padding: 6px 0px;
 	width: var(--side-length);
 	height: var(--side-length);
 }
 
 #email {
 	font-family: math;
+	font-weight: bold;
 	font-size: var(--side-length);
-	color: var(--color);
 }
-#email:hover {
-	color: var(--highlight);
-}
+
 #resume {
 	height: calc(var(--side-length) - 15px);
-	padding-top: 12px;
-	padding-bottom: 8px;
+	padding-top: 16px;
+	padding-bottom: 11px;
 }

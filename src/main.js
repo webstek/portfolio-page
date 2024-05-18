@@ -1,72 +1,142 @@
 import * as THREE from 'three';
+
+import WebGL from 'three/addons/capabilities/WebGL.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
-// init the renderer
-const renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
-renderer.setPixelRatio( window.devicePixelRatio );
-renderer.setSize( Math.min(window.innerWidth / 2, 300), Math.min(window.innerWidth / 2, 300) );
-document.body.appendChild( renderer.domElement );
-renderer.domElement.setAttribute('id','landing-renderer')
-
-const camera = new THREE.PerspectiveCamera( 70, 1, 0.01, 1000 );
-const controls = new OrbitControls( camera, renderer.domElement );
-camera.position.set(0, 3, 15);
-camera.lookAt(0, 0, 0)
-controls.update();
-
-const scene = new THREE.Scene();
-
-// Rotating rainbow cube to test threejs
-const geometry = new THREE.BoxGeometry( 10, 10, 10 );
-const material = new THREE.MeshNormalMaterial();
-const mesh = new THREE.Mesh( geometry, material );
-scene.add( mesh );
+// declarations for rendering and animation
+let camera, scene, renderer, clock;
+let icosahedron;
 
 
-// adaptively size the renderer
-window.addEventListener( 'resize', () => {
-	renderer.setSize( Math.min(window.innerWidth / 2, 300), Math.min(window.innerWidth / 2, 300) );
-} );
+// Check if WebGL is available in the web browser
+if ( WebGL.isWebGL2Available() ) {
+	init();
+	renderAnimation();
+} else {
+	const warning = WebGL.getWebGLErrorMessage();
+	document.getElementById( 'center-container' ).appendChild( warning );
+}
 
-// animation
-function animate( time ) {
-	mesh.rotation.y = time / 2000;
-	mesh.rotation.x = time / 2000;
-	mesh.rotation.z = time / 2000;
 
+function init() {
+
+	// Initialize components
+	initScene();
+	initInteraction();
+
+
+	// Add to the webpage with an ID and resizing
+	document.body.appendChild( renderer.domElement );
+	renderer.domElement.setAttribute( 'id', 'gallery-renderer' );
+	window.addEventListener( 'resize', onWindowResize );
+}
+
+
+function initInteraction() {
+
+	// WebGLRenderer instance with antialiasing and transparency enabled
+	renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+	renderer.setPixelRatio( window.devicePixelRatio );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	
+
+	// Camera control with the mouse
+	const controls = new OrbitControls( camera, renderer.domElement );
+	controls.target.set( 0, 0, 0 );
+	controls.enablePan = false;
+	controls.enableZoom = false;
 	controls.update();
+
+
+	// Clock for animating independent of framerate
+	clock = new THREE.Clock();
+}
+
+
+function initScene() {
+
+	// Perspective camera to view scene, y-dir is up
+	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+	camera.position.set(0, 15, 15);
+
+
+	// Data structure to place the scene in
+	scene = new THREE.Scene();
+
+	
+	// Lighting the scene
+	
+	// ambient light to illuminate shadows slightly
+	scene.add( new THREE.AmbientLight(0x404040, 3) );
+
+
+	// directional light to show geometry and material
+	const dirLight = new THREE.DirectionalLight( 0xffffff, 3 );
+	dirLight.position.set( 5, 10, 1 );
+	scene.add( dirLight );
+
+
+	// Adding Geometry
+
+	// floor to place interesting gallery geometry on
+	let geometry = new THREE.BoxGeometry( 10, 0.1, 10 );
+	let material = new THREE.MeshPhongMaterial( {
+		color: 0x909090,
+		shininess: 10,
+		specular: 0xa0a0a0
+	} );
+	const floor = new THREE.Mesh( geometry, material );
+	scene.add( floor );
+
+
+	// icosahedron test geometry
+	geometry = new THREE.IcosahedronGeometry( 2, 0 );
+	material = new THREE.MeshPhongMaterial( {
+		color: 0xfab330,
+		shininess: 80,
+		specular: 0xffd050
+	})
+	icosahedron = new THREE.Mesh( geometry, material );
+	icosahedron.position.set( 0, 2, 0 );
+	scene.add( icosahedron );
+}
+
+
+function onWindowResize() {
+
+	// Update the size of the renderer to match the window size
+	renderer.setSize( window.innerWidth, window.innerHeight );
+
+
+	// Update camera to maintain perspective
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionmatrix();
+}
+
+
+function renderAnimation() {
+	
+	// render state from last frame and tell window to call this again once its done
+	render();
+	requestAnimationFrame(renderAnimation);
+
+
+	// get time since last frame and update state
+	const delta = clock.getDelta();
+	update( delta );
+}
+
+
+function render() {
+
+	// get the renderer to draw the scene
 	renderer.render( scene, camera );
 }
 
-renderer.setAnimationLoop(animate);
 
-
-
-
-
-
-
-// // Example 3d font
-// import { FontLoader } from 'three/addons/loaders/FontLoader';
-// import { TextGeometry } from 'three/addons/geometries/TextGeometry';
-// // Portfolio Text
-// const fontsize = 10;
-// const fontLoader = new FontLoader();
-// fontLoader.load('node_modules/three/examples/fonts/helvetiker_bold.typeface.json', 
-// 	function ( font ) {
-// 		const portfolioText = new TextGeometry('webstek', {
-// 			font: font,
-// 			depth: 0.3*fontsize,
-// 			size: fontsize,
-// 			bevelEnabled: true,
-// 			bevelThickness: fontsize*0.05,
-// 			bevelSize: fontsize*0.05,
-// 			bevelSegments: fontsize*3
-// 			});
-// 		const fontMesh = new THREE.Mesh( portfolioText, material );
-// 		fontMesh.position.set(-26, 40, 0);
-// 		fontMesh.quaternion.setFromAxisAngle(new THREE.Vector3( 1, 0, 0 ), Math.PI / 6);
-// 		scene.add( fontMesh );
-// 	}
-// );
+function update( t ) {
+	
+	// spin the icosahedron at 1 Hz about the y-axis
+	icosahedron.rotation.y += t;
+}
